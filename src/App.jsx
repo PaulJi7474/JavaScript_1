@@ -1,12 +1,8 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
-import Interviews from './pages/interviews'
-import Header  from './pages/header'
-import InterviewForm from './pages/InterviewForm'
-import Questions from "./pages/Questions"; 
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Interviews from "./pages/Interviews";
+import InterviewForm from "./pages/InterviewForm";
+import Questions from "./pages/Questions";
+import "./App.css";
 
 export default function App() {
   return (
@@ -19,5 +15,3 @@ export default function App() {
     </Router>
   );
 }
-
-
