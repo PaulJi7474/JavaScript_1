@@ -1,63 +1,106 @@
-// src/pages/Interviews.jsx
 import React from "react";
 import { Link } from "react-router-dom";
+import "./Interviews.css";
 
 export default function Interviews() {
   return (
-    <div className="min-h-screen p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-semibold m-0">Interview Management</h3>
+    <div className="page-layout">
+      <header className="header">
+        <div className="header__left">
+          <Link to="/" className="header__action">
+            Interviews
+          </Link>
+        </div>
+        <h1 className="header__title">ReadySetHire - AI-Powered Interview Platform</h1>
+      </header>
 
-        {/* 跳到 InterviewNew */}
-        <Link
-          to="/interviews/new"
-          className="bg-blue-500 text-white px-4 py-2 rounded inline-block"
-        >
-          + Add Interview
-        </Link>
-      </div>
+      <main className="main">
+        <div className="content">
+          <section className="card">
+            <div className="card__header">
+              <h2 className="card__title">Interviews Management</h2>
+              <Link to="/interviews/new" className="add-interview">
+                + Add Interview
+              </Link>
+            </div>
 
-      {/* 表格（暂用静态占位） */}
-      <table className="w-full border-collapse border border-gray-300">
-        <thead className="bg-gray-200">
-          <tr>
-            <th className="border px-4 py-2 text-left">Title</th>
-            <th className="border px-4 py-2 text-left">Job Role</th>
-            <th className="border px-4 py-2 text-left">Status</th>
-            <th className="border px-4 py-2 text-left">Questions</th>
-            <th className="border px-4 py-2 text-left">Applicants</th>
-            <th className="border px-4 py-2 text-left">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td className="border px-4 py-2">Frontend Developer Interview</td>
-            <td className="border px-4 py-2">Frontend Developer</td>
-            <td className="border px-4 py-2">Published</td>
-            <td className="border px-4 py-2">3</td>
-            <td className="border px-4 py-2">2</td>
-            <td className="border px-4 py-2">
-              <div className="flex gap-2">
-                <button className="text-blue-500">✏️</button>
-                <button className="text-red-500">🗑️</button>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td className="border px-4 py-2">Backend Engineer Assessment</td>
-            <td className="border px-4 py-2">Backend Engineer</td>
-            <td className="border px-4 py-2">Draft</td>
-            <td className="border px-4 py-2">0</td>
-            <td className="border px-4 py-2">0</td>
-            <td className="border px-4 py-2">
-              <div className="flex gap-2">
-                <button className="text-blue-500">✏️</button>
-                <button className="text-red-500">🗑️</button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            <div className="table-wrapper">
+              <table className="interviews-table">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Job Role</th>
+                    <th>Status</th>
+                    <th>Questions</th>
+                    <th>Applicants</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Frontend Developer Interview</td>
+                    <td>Frontend Developer</td>
+                    <td>
+                      <span className="status-badge status-badge--published">Published</span>
+                    </td>
+                    <td>
+                      <Link to="/interviews/1/questions" className="link">
+                        3 Questions
+                      </Link>
+                    </td>
+                    <td>
+                      <div className="applicants">
+                        <span>2 Applicants</span>
+                        <small>1 Completed</small>
+                        <small>1 Pending</small>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="actions">
+                        <button type="button" className="action-button" aria-label="Edit interview">
+                          ✏️
+                        </button>
+                        <button type="button" className="action-button" aria-label="Delete interview">
+                          🗑️
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Backend Engineer Assessment</td>
+                    <td>Backend Engineer</td>
+                    <td>
+                      <span className="status-badge status-badge--draft">Draft</span>
+                    </td>
+                    <td>
+                      <span className="link">0 Questions</span>
+                    </td>
+                    <td>
+                      <div className="applicants">
+                        <span>0 Applicants</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="actions">
+                        <button type="button" className="action-button" aria-label="Edit interview">
+                          ✏️
+                        </button>
+                        <button type="button" className="action-button" aria-label="Delete interview">
+                          🗑️
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer className="footer">
+        © 2025 ReadySetHire - Streamlining the hiring process with AI
+      </footer>
     </div>
   );
 }

@@ -1,14 +1,6 @@
-// src/pages/InterviewForm.jsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
-function onSubmit(e) {
-  e.preventDefault();
-  const newId = Date.now(); // 先占位；接 API 后换成返回的 id
-  navigate(`/interviews/${newId}/questions`, {
-    state: { interviewTitle: form.title },
-  });
-}
+import "./Interviews.css";
 
 export default function InterviewForm() {
   const navigate = useNavigate();
@@ -19,88 +11,112 @@ export default function InterviewForm() {
     status: "Draft",
   });
 
-  const onChange = (e) => {
-    const { name, value } = e.target;
-    setForm((f) => ({ ...f, [name]: value }));
+  const onChange = (event) => {
+    const { name, value } = event.target;
+    setForm((previous) => ({ ...previous, [name]: value }));
   };
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-    // TODO: 这里将来改成 POST /interview，并用返回的 id
-    const newId = Date.now(); // 占位 id
+  const onSubmit = (event) => {
+    event.preventDefault();
+    const newId = Date.now();
     navigate(`/interviews/${newId}/questions`, {
       state: { interviewTitle: form.title },
     });
   };
 
   return (
-    <div className="min-h-screen p-6">
-      <div className="max-w-4xl mx-auto border border-gray-300 p-6 rounded">
-        <Link to="/" className="text-blue-600 inline-block mb-4">← Back to Interviews</Link>
-        <h2 className="text-2xl font-semibold mb-6">Add New Interview</h2>
+    <div className="page-layout">
+      <header className="header">
+        <div className="header__right">
+          <Link to="/" className="header__action">
+            Interviews
+          </Link>
+        </div>
+        <h1 className="header__title">ReadySetHire - AI-Powered Interview Platform</h1>
+      </header>
 
-        <form onSubmit={onSubmit} className="space-y-6">
-          <div>
-            <label className="block font-medium mb-2">Title *</label>
-            <input
-              name="title"
-              value={form.title}
-              onChange={onChange}
-              placeholder="Interview Title"
-              className="w-full border border-gray-300 rounded px-3 py-3"
-              required
-            />
-          </div>
+      <main className="main">
+        <div className="content content--narrow">
+          <section className="card card--form">
+            <div className="form-card__header">
+              <Link to="/" className="back-link">
+                ← Back to Interviews
+              </Link>
+              <h2 className="card__title">Add New Interview</h2>
+            </div>
 
-          <div>
-            <label className="block font-medium mb-2">Job Role *</label>
-            <input
-              name="jobRole"
-              value={form.jobRole}
-              onChange={onChange}
-              placeholder="Job Role"
-              className="w-full border border-gray-300 rounded px-3 py-3"
-              required
-            />
-          </div>
+            <form onSubmit={onSubmit} className="form">
+              <div className="form-field">
+                <label htmlFor="title">Title *</label>
+                <input
+                  id="title"
+                  name="title"
+                  value={form.title}
+                  onChange={onChange}
+                  placeholder="Interview Title"
+                  required
+                />
+              </div>
 
-          <div>
-            <label className="block font-medium mb-2">Description *</label>
-            <textarea
-              name="description"
-              value={form.description}
-              onChange={onChange}
-              placeholder="Interview Description"
-              rows={6}
-              className="w-full border border-gray-300 rounded px-3 py-3"
-              required
-            />
-          </div>
+              <div className="form-field">
+                <label htmlFor="jobRole">Job Role *</label>
+                <input
+                  id="jobRole"
+                  name="jobRole"
+                  value={form.jobRole}
+                  onChange={onChange}
+                  placeholder="Job Role"
+                  required
+                />
+              </div>
 
-          <div>
-            <label className="block font-medium mb-2">Status *</label>
-            <select
-              name="status"
-              value={form.status}
-              onChange={onChange}
-              className="w-full border border-gray-300 rounded px-3 py-3"
-              required
-            >
-              <option value="Draft">Draft</option>
-              <option value="Published">Published</option>
-            </select>
-          </div>
+              <div className="form-field">
+                <label htmlFor="description">Description *</label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={form.description}
+                  onChange={onChange}
+                  placeholder="Interview Description"
+                  rows={6}
+                  required
+                />
+              </div>
 
-          <div className="flex gap-4">
-            <button type="submit" className="bg-blue-600 text-white px-5 py-3 rounded">
-              Add Interview
-            </button>
-            <button type="button" onClick={() => navigate(-1)} className="border border-gray-300 px-5 py-3 rounded">
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
+              <div className="form-field">
+                <label htmlFor="status">Status *</label>
+                <select
+                  id="status"
+                  name="status"
+                  value={form.status}
+                  onChange={onChange}
+                  required
+                >
+                  <option value="Draft">Draft</option>
+                  <option value="Published">Published</option>
+                </select>
+              </div>
+
+              <div className="form-actions">
+                <button type="submit" className="button button--primary">
+                  Add Interview
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate(-1)}
+                  className="button button--secondary"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      </main>
+
+      <footer className="footer">
+        © 2025 ReadySetHire - Streamlining the hiring process with AI
+      </footer>
     </div>
   );
 }
