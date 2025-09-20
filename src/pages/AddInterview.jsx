@@ -1,28 +1,75 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./interviews.css";
+import axios from "axios";
+
+// dotenv.config();
 
 export default function InterviewForm() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
+    // id: Date.now(),
     title: "",
     jobRole: "",
     description: "",
     status: "Draft",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const onChange = (event) => {
     const { name, value } = event.target;
     setForm((previous) => ({ ...previous, [name]: value }));
   };
 
-  const onSubmit = (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault();
-    const newId = Date.now();
-    navigate(`/interviews/${newId}/questions`, {
-      state: { interviewTitle: form.title },
-    });
+    setError("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(
+        "https://comp2140a2.uqcloud.net/api/interview",
+        {
+          method: "POST",
+          headers: {
+            // "Content-Type": "application/json",
+            Authorization:
+              `Bearer ${process.env.TMDB_API_KEY}`,
+          },
+          body: JSON.stringify({
+            title: form.title,
+            jobRole: form.jobRole,
+            description: form.description,
+            status: form.status,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Request failed: ${response.status}`);
+      }
+
+      const data = await response.json().catch(() => ({}));
+
+      const interviewId =
+        data?.id ?? data?.interviewId ?? data?.interview_id ?? data?.ID;
+
+      if (interviewId) {
+        navigate(`/interviews/${interviewId}/questions`, {
+          state: { interviewTitle: form.title },
+        });
+      } else {
+        navigate("/", { replace: true });
+      }
+    } catch (submissionError) {
+      console.error("Failed to add interview", submissionError);
+      setError("Failed to add interview. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
 
   return (
     <div className="page-layout">
@@ -48,6 +95,7 @@ export default function InterviewForm() {
             </div>
 
             <form onSubmit={onSubmit} className="form">
+              {error ? <p className="form-error">{error}</p> : null}
               <div className="form-field">
                 <label htmlFor="title">Title *</label>
                 <input
@@ -100,7 +148,11 @@ export default function InterviewForm() {
               </div>
 
               <div className="form-actions">
-                <button type="submit" className="button button--primary">
+                <button
+                  type="submit"
+                  className="button button--primary"
+                  disabled={isSubmitting}
+                >
                   Add Interview
                 </button>
                 <button

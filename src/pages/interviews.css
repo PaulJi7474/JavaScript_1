@@ -186,6 +186,16 @@
   gap: 24px;
 }
 
+.form-error {
+  margin: 0;
+  padding: 12px 16px;
+  border: 1px solid #f87171;
+  background-color: rgba(248, 113, 113, 0.12);
+  color: #991b1b;
+  border-radius: 0;
+  font-weight: 600;
+}
+
 .form-field {
   display: flex;
   flex-direction: column;
@@ -451,9 +461,9 @@
   border-radius: 0;
   display: inline-flex;
   align-items: center;
-  gap: 6px;          /* 图标和文字间距 */
-  font-size: 10px;   /* 字号 */
-  padding: 4px 8px; /* 上下 8px，左右 12px，影响按钮高度和宽度 */
+  gap: 6px;         
+  font-size: 10px;  
+  padding: 4px 8px; 
   cursor: pointer;
   white-space: nowrap;
 }
@@ -469,9 +479,9 @@
   border-radius: 0;
   display: inline-flex;
   align-items: center;
-  gap: 6px;          /* 图标和文字间距 */
-  font-size: 10px;   /* 字号 */
-  padding: 4px 8px; /* 上下 8px，左右 12px，影响按钮高度和宽度 */
+  gap: 6px;         
+  font-size: 10px;   
+  padding: 4px 8px; 
   cursor: pointer;
   white-space: nowrap;
 }
@@ -508,9 +518,9 @@
 .footer {
   padding: 5px;
   text-align: center;
-  color: #464646;         /* 文字颜色 */
+  color: #464646;      
   font-size: 0.9rem;
-  background-color: #ededed; /* 浅灰背景 */
-  border-top: 1px solid #d1d5db; /* 上边框分隔线 */
+  background-color: #ededed; 
+  border-top: 1px solid #d1d5db; 
   max-height: 50px;
 }
