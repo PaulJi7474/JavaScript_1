@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Interviews from "./pages/interviews";
+import Interviews from "./pages/Interviews";
 import InterviewForm from "./pages/AddInterview";
 import Questions from "./pages/Questions";
 import Applicants from "./pages/Applicants";
