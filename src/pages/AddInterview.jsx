@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./interviews.css";
 
 export default function InterviewForm() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
+    key: Date.now(),
     title: "",
     jobRole: "",
     description: "",
@@ -16,12 +18,58 @@ export default function InterviewForm() {
     setForm((previous) => ({ ...previous, [name]: value }));
   };
 
-  const onSubmit = (event) => {
-    event.preventDefault();
-    const newId = Date.now();
-    navigate(`/interviews/${newId}/questions`, {
-      state: { interviewTitle: form.title },
-    });
+  const handleAddInterview = async () => {
+    try {
+      const token = window?.localStorage?.getItem("authToken");
+      const headers = {
+        "Content-Type": "application/json",
+      };
+
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await fetch(
+        "https://comp2140a2.uqcloud.net/api/interview",
+        {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            id: form.id,
+            title: form.title,
+            jobRole: form.jobRole,
+            job_role: form.jobRole,
+            description: form.description,
+            status: form.status,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      const data = (await response.json()) ?? {};
+
+      const toInteger = (value) => {
+        const numericValue = Number(value);
+        return Number.isInteger(numericValue) ? numericValue : null;
+      };
+
+      const createdId =
+        toInteger(data?.id) ??
+        toInteger(data?.interviewId) ??
+        toInteger(data?.interview_id) ??
+        toInteger(data?.data?.id) ??
+        toInteger(form.id) ??
+        Date.now();
+
+      navigate(`/interviews/${createdId}/questions`, {
+        state: { interviewTitle: form.title },
+      });
+    } catch (error) {
+      console.error("Failed to create interview:", error);
+    }
   };
 
   return (
@@ -47,7 +95,7 @@ export default function InterviewForm() {
               <h2 className="card__title">Add New Interview</h2>
             </div>
 
-            <form onSubmit={onSubmit} className="form">
+            <form className="form">
               <div className="form-field">
                 <label htmlFor="title">Title *</label>
                 <input
@@ -100,7 +148,11 @@ export default function InterviewForm() {
               </div>
 
               <div className="form-actions">
-                <button type="submit" className="button button--primary">
+                <button
+                  type="button"
+                  onClick={handleAddInterview}
+                  className="button button--primary"
+                >
                   Add Interview
                 </button>
                 <button
