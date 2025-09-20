@@ -35,9 +35,8 @@ export default function InterviewForm() {
           method: "POST",
           headers,
           body: JSON.stringify({
-            id: form.id,
+            // id: form.id,
             title: form.title,
-            jobRole: form.jobRole,
             job_role: form.jobRole,
             description: form.description,
             status: form.status,
@@ -56,13 +55,13 @@ export default function InterviewForm() {
         return Number.isInteger(numericValue) ? numericValue : null;
       };
 
-      const createdId =
-        toInteger(data?.id) ??
-        toInteger(data?.interviewId) ??
-        toInteger(data?.interview_id) ??
-        toInteger(data?.data?.id) ??
-        toInteger(form.id) ??
-        Date.now();
+      // const createdId =
+      //   toInteger(data?.id) ??
+      //   toInteger(data?.interviewId) ??
+      //   toInteger(data?.interview_id) ??
+      //   toInteger(data?.data?.id) ??
+      //   toInteger(form.id) ??
+      //   Date.now();
 
       navigate(`/interviews/${createdId}/questions`, {
         state: { interviewTitle: form.title },
