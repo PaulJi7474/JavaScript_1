@@ -48,7 +48,22 @@ export default function InterviewForm() {
         throw new Error(`Request failed with status ${response.status}`);
       }
 
-      const data = (await response.json()) ?? {};
+      const contentLengthHeader = response.headers.get("content-length");
+      const contentTypeHeader = response.headers.get("content-type");
+
+      const parsedContentLength =
+        contentLengthHeader !== null
+          ? Number.parseInt(contentLengthHeader, 10)
+          : Number.NaN;
+
+      const shouldParseJson =
+        Number.isFinite(parsedContentLength) && parsedContentLength > 0
+          ? true
+          : !contentLengthHeader &&
+            typeof contentTypeHeader === "string" &&
+            contentTypeHeader.toLowerCase().includes("application/json");
+
+      const data = shouldParseJson ? (await response.json()) ?? {} : {};
 
       const toInteger = (value) => {
         const numericValue = Number(value);
