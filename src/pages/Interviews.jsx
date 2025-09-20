@@ -5,13 +5,15 @@ import "./interviews.css";
 export default function Interviews() {
   return (
     <div className="page-layout">
-      <header className="header">
+      <header className="header header--brand-left">
+        <h1 className="header__title header__title--left">
+          ReadySetHire - AI-Powered Interview Platform
+        </h1>
         <div className="header__left">
           <Link to="/" className="header__action">
             Interviews
           </Link>
         </div>
-        <h1 className="header__title">ReadySetHire - AI-Powered Interview Platform</h1>
       </header>
 
       <main className="main">

@@ -55,7 +55,7 @@ export default function TakeInterview() {
 
       <main className="main">
         <div className="content content--narrow">
-          <div className="back-link-container">
+          <div className="back-to-interviews">
             <Link to={`/interviews/${interviewId}/applicants`} className="back-link">
               ← Back to Applicants
             </Link>
@@ -63,9 +63,10 @@ export default function TakeInterview() {
 
           <section className="card card--centered">
             <div className="card__body">
-              <h2 className="card__title">Welcome to Your Interview</h2>
+              
               <div className="take-interview__details">
                 <div className="take-interview__section">
+                  <h2 className="card__title">Welcome to Your Interview</h2>
                   <h3 className="take-interview__heading">Applicant Details:</h3>
                   <p>{applicantDetails.name}</p>
                   <p>{applicantDetails.email}</p>
@@ -75,10 +76,11 @@ export default function TakeInterview() {
                   <p>{interviewTitle}</p>
                   <p>Interview for {interviewTitle} position</p>
                 </div>
-              </div>
-              <button type="button" className="rect-button rect-button--primary take-interview__button">
+                <button type="button" className="rect-button rect-button--primary start-interview__button">
                 Start Interview
               </button>
+              </div>
+
             </div>
           </section>
         </div>

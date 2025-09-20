@@ -175,7 +175,7 @@
   color: #111827;
 }
 
-.take-interview__button {
+.start-interview__button {
   padding: 12px 20px;
   font-size: 1rem;
 }
@@ -261,7 +261,7 @@
   overflow-x: auto;
 }
 
-.back-link-container {
+.back-to-interviews {
   margin-bottom: 16px;
 }
 
