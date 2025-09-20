@@ -1,21 +1,7 @@
 import React from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import "./Interviews.css";
-
-const applicants = [
-  {
-    name: "Mr John Smith",
-    email: "john@email.com",
-    phone: "555-0123",
-    status: "Completed",
-  },
-  {
-    name: "Ms Sarah Johnson",
-    email: "sarah@email.com",
-    phone: "555-0456",
-    status: "Not Started",
-  },
-];
+import { APPLICANTS } from "../data/applicants";
 
 const statusClassMap = {
   Completed: "status-tag status-tag--completed",
@@ -23,7 +9,7 @@ const statusClassMap = {
 };
 
 export default function Applicants() {
-  const { id } = useParams();
+  const { id: interviewId } = useParams();
   const { state } = useLocation();
   const interviewTitle = state?.interviewTitle || "Untitled Interview";
 
@@ -68,7 +54,7 @@ export default function Applicants() {
                   </tr>
                 </thead>
                 <tbody>
-                  {applicants.map((applicant) => (
+                  {APPLICANTS.map((applicant) => (
                     <tr key={applicant.email}>
                       <td>{applicant.name}</td>
                       <td>{applicant.email}</td>
@@ -84,9 +70,13 @@ export default function Applicants() {
                           <button type="button" className="rect-button rect-button--ghost">
                             Copy Link
                           </button>
-                          <button type="button" className="rect-button rect-button--outline">
+                          <Link
+                            to={`/interviews/${interviewId}/applicants/${applicant.id}/interview`}
+                            state={{ interviewTitle, applicant }}
+                            className="rect-button rect-button--outline"
+                          >
                             Take Interview
-                          </button>
+                          </Link>
                         </div>
                       </td>
                     </tr>

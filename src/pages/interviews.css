@@ -79,6 +79,20 @@
   overflow: visible;
 }
 
+.card--centered {
+  display: flex;
+  justify-content: center;
+}
+
+.card__body {
+  padding: 40px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  align-items: center;
+  text-align: center;
+}
+
 .card__header {
   display: flex;
   justify-content: space-between;
@@ -136,6 +150,34 @@
 
 .back-link:hover {
   text-decoration: underline;
+}
+
+.take-interview__details {
+  width: 100%;
+  background-color: #f8faff;
+  border: 1px solid #e5eaf4;
+  padding: 24px 28px;
+  display: grid;
+  gap: 20px;
+}
+
+.take-interview__section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #1f2933;
+}
+
+.take-interview__heading {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.take-interview__button {
+  padding: 12px 20px;
+  font-size: 1rem;
 }
 
 .form {
