@@ -1,14 +1,22 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./interviews.css";
-import axios from "axios";
+// import axios from "axios";
+// import dotenv from "dotenv";
 
 // dotenv.config();
+
+// const tmdbApiKey = import.meta.env.VITE_TMDB_API_KEY;
+  // import.meta.env?.VITE_TMDB_API_KEY ??
+  // (typeof globalThis !== "undefined" &&
+  //   typeof globalThis.process !== "undefined"
+  //     ? globalThis.process.env?.TMDB_API_KEY
+  //     : undefined);
 
 export default function InterviewForm() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    // id: Date.now(),
+    id: Date.now(),
     title: "",
     jobRole: "",
     description: "",
@@ -33,11 +41,13 @@ export default function InterviewForm() {
         {
           method: "POST",
           headers: {
-            // "Content-Type": "application/json",
-            Authorization:
-              `Bearer ${process.env.TMDB_API_KEY}`,
+            "Content-Type": "application/json",
+            // Authorization: `Bearer ${tmdbApiKey}`,
+            Authorization:`Bearer ${process.env.VITE_TMDB_API_KEY}`
+            // Authorization:`Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic3R1ZGVudCIsInVzZXJuYW1lIjoiczQ4NDkxMjMifQ.zloDtPVIpdCxmfBWaTQDJHt6kJHIz3xqY1sfZ4ZYElA`
           },
           body: JSON.stringify({
+            id: form.id,
             title: form.title,
             jobRole: form.jobRole,
             description: form.description,
