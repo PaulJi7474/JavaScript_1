@@ -26,7 +26,8 @@ export default function Interviews() {
           setInterviews(Array.isArray(data) ? data : []);
           setActionError("");
         }
-      } catch (err) {
+      } catch (fetchError) {
+        console.error("Unable to load interviews", fetchError);
         if (isMounted) {
           setError("Unable to load interviews. Please try again later.");
         }
