@@ -173,6 +173,18 @@ export default function AddApplicant() {
                 />
               </div>
 
+              <div className="form-field">
+                <label htmlFor="status">Status *</label>
+                <input
+                  id="status"
+                  name="status"
+                  type="text"
+                  value={DEFAULT_STATUS}
+                  readOnly
+                  disabled
+                />
+              </div>
+
               <div className="form-actions">
                 <button
                   type="submit"

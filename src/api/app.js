@@ -12,12 +12,17 @@ const USERNAME = "s4849123";
  * It sets the Authorization token and optionally includes the request body.
  */
 export async function apiRequest(endpoint, method = "GET", body = null) {
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  if (JWT_TOKEN) {
+    headers.Authorization = `Bearer ${JWT_TOKEN}`;
+  }
+
   const options = {
     method,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${JWT_TOKEN}`,
-    },
+    headers,
   };
 
   if (method === "POST" || method === "PATCH") {

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import "./interviewsCss.css";
-import { APPLICANTS } from "../data/applicants";
+import { APPLICANTS } from "../data/applicantsData";
 
 export default function TakeInterview() {
   const { state } = useLocation();
