@@ -1,22 +1,11 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./interviews.css";
-// import axios from "axios";
-// import dotenv from "dotenv";
-
-// dotenv.config();
-
-// const tmdbApiKey = import.meta.env.VITE_TMDB_API_KEY;
-  // import.meta.env?.VITE_TMDB_API_KEY ??
-  // (typeof globalThis !== "undefined" &&
-  //   typeof globalThis.process !== "undefined"
-  //     ? globalThis.process.env?.TMDB_API_KEY
-  //     : undefined);
+import { createInterview } from "../api/app";
+import "./interviewsCss.css";
 
 export default function InterviewForm() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    id: Date.now(),
     title: "",
     jobRole: "",
     description: "",
@@ -24,6 +13,16 @@ export default function InterviewForm() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const navigationTimerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (navigationTimerRef.current) {
+        clearTimeout(navigationTimerRef.current);
+      }
+    };
+  }, []);
 
   const onChange = (event) => {
     const { name, value } = event.target;
@@ -33,42 +32,33 @@ export default function InterviewForm() {
   const onSubmit = async (event) => {
     event.preventDefault();
     setError("");
+    setSuccess("");
+    if (navigationTimerRef.current) {
+      clearTimeout(navigationTimerRef.current);
+      navigationTimerRef.current = null;
+    }
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(
-        "https://comp2140a2.uqcloud.net/api/interview",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            // Authorization: `Bearer ${tmdbApiKey}`,
-            Authorization:`Bearer ${process.env.VITE_TMDB_API_KEY}`
-            // Authorization:`Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic3R1ZGVudCIsInVzZXJuYW1lIjoiczQ4NDkxMjMifQ.zloDtPVIpdCxmfBWaTQDJHt6kJHIz3xqY1sfZ4ZYElA`
-          },
-          body: JSON.stringify({
-            id: form.id,
-            title: form.title,
-            jobRole: form.jobRole,
-            description: form.description,
-            status: form.status,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Request failed: ${response.status}`);
-      }
-
-      const data = await response.json().catch(() => ({}));
+      const data = await createInterview({
+        // id: form.id,
+        title: form.title,
+        job_role: form.jobRole,
+        description: form.description,
+        status: form.status,
+      });
 
       const interviewId =
         data?.id ?? data?.interviewId ?? data?.interview_id ?? data?.ID;
 
       if (interviewId) {
-        navigate(`/interviews/${interviewId}/questions`, {
-          state: { interviewTitle: form.title },
-        });
+        setSuccess("Interview successfully added");
+        navigationTimerRef.current = setTimeout(() => {
+          navigate(`/interviews/${interviewId}/questions`, {
+            state: { interviewTitle: form.title },
+          });
+          navigationTimerRef.current = null;
+        }, 1200);
       } else {
         navigate("/", { replace: true });
       }
@@ -79,7 +69,6 @@ export default function InterviewForm() {
       setIsSubmitting(false);
     }
   };
-
 
   return (
     <div className="page-layout">
@@ -106,6 +95,7 @@ export default function InterviewForm() {
 
             <form onSubmit={onSubmit} className="form">
               {error ? <p className="form-error">{error}</p> : null}
+              {success ? <p className="form-success">{success}</p> : null}
               <div className="form-field">
                 <label htmlFor="title">Title *</label>
                 <input

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import "./interviews.css";
+import "./interviewsCss.css";
 
 const QUESTION_ROWS = [
   {

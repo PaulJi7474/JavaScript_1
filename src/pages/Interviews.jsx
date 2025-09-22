@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "./interviews.css";
+import "./interviewsCss.css";
 
 export default function Interviews() {
   return (

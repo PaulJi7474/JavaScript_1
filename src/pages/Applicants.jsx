@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
-import "./interviews.css";
+import "./interviewsCss.css";
 import { APPLICANTS } from "../data/applicants";
 
 const statusClassMap = {
