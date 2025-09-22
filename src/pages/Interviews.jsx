@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteInterview, getInterviews } from "../api/app";
+import { getQuestionCountByInterview } from "../api/questions";
 import "./interviewsCss.css";
 
 const STATUS_CLASS_MAP = {
@@ -14,6 +15,7 @@ export default function Interviews() {
   const [loading, setLoading] = useState(true);
   const [actionError, setActionError] = useState("");
   const [deletingId, setDeletingId] = useState(null);
+  const [questionCounts, setQuestionCounts] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -92,6 +94,71 @@ export default function Interviews() {
     return Array.from(groups.values());
   }, [interviews]);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchQuestionCounts() {
+      if (!aggregatedInterviews.length) {
+        if (isMounted) {
+          setQuestionCounts({});
+        }
+        return;
+      }
+
+      const ids = aggregatedInterviews
+        .map(({ interview }) => interview?.id)
+        .filter((id) => id !== null && id !== undefined);
+
+      if (!ids.length) {
+        if (isMounted) {
+          setQuestionCounts({});
+        }
+        return;
+      }
+
+      const uniqueIdMap = new Map(ids.map((value) => [String(value), value]));
+
+      try {
+        const entries = await Promise.all(
+          Array.from(uniqueIdMap.values()).map(async (interviewId) => {
+            try {
+              const total = await getQuestionCountByInterview(interviewId);
+              const numericTotal = Number(total);
+              return [interviewId, Number.isFinite(numericTotal) ? numericTotal : 0];
+            } catch (fetchError) {
+              console.error(
+                `Unable to load question count for interview ${interviewId}`,
+                fetchError,
+              );
+              return [interviewId, 0];
+            }
+          }),
+        );
+
+        if (!isMounted) {
+          return;
+        }
+
+        const nextCounts = entries.reduce((accumulator, [id, total]) => {
+          accumulator[id] = total;
+          return accumulator;
+        }, {});
+
+        setQuestionCounts(nextCounts);
+      } catch (error) {
+        console.error("Failed to load question counts", error);
+        if (isMounted) {
+          setQuestionCounts({});
+        }
+      }
+    }
+
+    fetchQuestionCounts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [aggregatedInterviews]);
   const renderStatusBadge = (status) => {
     const text = status || "Unknown";
     const className = STATUS_CLASS_MAP[text] || "status-badge";
@@ -131,7 +198,13 @@ export default function Interviews() {
 
     return aggregatedInterviews.map(({ interview, count }) => {
       const { id, title, job_role: jobRole, status } = interview;
-      const questionLabel = `${count} Question${count > 1 ? "s" : ""}`;
+      const countFromApi =
+        id !== null && id !== undefined && typeof questionCounts[id] === "number"
+          ? questionCounts[id]
+          : typeof count === "number" && (id === null || id === undefined)
+            ? count
+            : 0;
+      const questionLabel = `${countFromApi} Question`;
       const interviewId = id ?? title.toLowerCase();
       const rowKey = id ?? `${title}-${jobRole}-${status}`;
 
