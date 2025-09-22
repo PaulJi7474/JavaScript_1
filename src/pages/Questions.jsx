@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { getQuestionsByInterview } from "../api/questions";
+import { deleteQuestion, getQuestionsByInterview } from "../api/questions";
 import "./interviewsCss.css";
 
 const difficultyClassMap = {
@@ -28,6 +28,7 @@ export default function Questions() {
   const [successMessage, setSuccessMessage] = useState(
     () => location.state?.successMessage || "",
   );
+  const [pendingDeletionId, setPendingDeletionId] = useState(null);
 
   useEffect(() => {
     if (location.state?.successMessage) {
@@ -97,6 +98,36 @@ export default function Questions() {
     });
   };
 
+  const handleDeleteQuestion = async (questionId) => {
+    if (!questionId || pendingDeletionId) {
+      return;
+    }
+
+    const confirmationMessage =
+      "Are you sure you want to delete this question? This action cannot be undone.";
+
+    if (typeof window !== "undefined" && !window.confirm(confirmationMessage)) {
+      return;
+    }
+
+    setPendingDeletionId(questionId);
+    setError("");
+
+    try {
+      await deleteQuestion(questionId);
+      setQuestions((prevQuestions) =>
+        prevQuestions.filter((question) => question?.id !== questionId),
+      );
+      setSuccessMessage("Question deleted successfully.");
+    } catch (deleteError) {
+      console.error("Failed to delete question", deleteError);
+      setError("Failed to delete the question. Please try again later.");
+      setSuccessMessage("");
+    } finally {
+      setPendingDeletionId(null);
+    }
+  };
+
   const renderTableBody = () => {
     if (loading) {
       return (
@@ -130,6 +161,8 @@ export default function Questions() {
 
     return questions.map((row, index) => {
       const key = row?.id ?? index;
+      const questionId = row?.id;
+      const isDeleting = pendingDeletionId === questionId;
       const questionText =
         (typeof row?.question_text === "string" && row.question_text.trim()) ||
         (typeof row?.question === "string" && row.question.trim()) ||
@@ -154,8 +187,11 @@ export default function Questions() {
                 type="button"
                 className="action-button"
                 aria-label="Delete question"
+                title={isDeleting ? "Deleting..." : "Delete question"}
+                disabled={!questionId || isDeleting}
+                onClick={() => handleDeleteQuestion(questionId)}
               >
-                🗑️
+                {isDeleting ? "⌛" : "🗑️"}
               </button>
             </div>
           </td>

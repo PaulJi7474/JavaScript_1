@@ -2,7 +2,7 @@
 const API_BASE_URL = "https://comp2140a2.uqcloud.net/api";
 
 // JWT token for authorization, replace with your actual token from My Grades in Blackboard
-const JWT_TOKEN = "";
+const JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic3R1ZGVudCIsInVzZXJuYW1lIjoiczQ4NDkxMjMifQ.zloDtPVIpdCxmfBWaTQDJHt6kJHIz3xqY1sfZ4ZYElA";
 
 // Your UQ student username, used for row-level security to retrieve your records
 const USERNAME = "s4849123";
