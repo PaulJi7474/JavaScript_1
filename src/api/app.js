@@ -34,6 +34,15 @@ export async function apiRequest(endpoint, method = "GET", body = null) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
+  if (response.status === 204) {
+    return null;
+  }
+
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.includes("application/json")) {
+    return null;
+  }
+
   return response.json();
 }
 
@@ -56,6 +65,20 @@ export function getInterviews() {
  */
 export function getInterview(id) {
   return apiRequest(`/interview?id=eq.${id}`);
+}
+
+/**
+ * Function to update an interview by its ID.
+ */
+export function updateInterview(id, interview) {
+  return apiRequest(`/interview?id=eq.${id}`, "PATCH", interview);
+}
+
+/**
+ * Function to delete an interview by its ID.
+ */
+export function deleteInterview(id) {
+  return apiRequest(`/interview?id=eq.${id}`, "DELETE");
 }
 
 /**

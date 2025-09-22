@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { getInterviews } from "../api/app";
+import { Link, useNavigate } from "react-router-dom";
+import { deleteInterview, getInterviews } from "../api/app";
 import "./interviewsCss.css";
 
 const STATUS_CLASS_MAP = {
@@ -12,6 +12,9 @@ export default function Interviews() {
   const [interviews, setInterviews] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [actionError, setActionError] = useState("");
+  const [deletingId, setDeletingId] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     let isMounted = true;
@@ -21,6 +24,7 @@ export default function Interviews() {
         const data = await getInterviews();
         if (isMounted) {
           setInterviews(Array.isArray(data) ? data : []);
+          setActionError("");
         }
       } catch (err) {
         if (isMounted) {
@@ -155,11 +159,23 @@ export default function Interviews() {
           </td>
           <td>
             <div className="actions">
-              <button type="button" className="action-button" aria-label="Edit interview">
+              <button
+                type="button"
+                className="action-button"
+                aria-label="Edit interview"
+                onClick={() => id && navigate(`/interviews/${id}/edit`)}
+                disabled={!id}
+              >
                 ✏️
               </button>
-              <button type="button" className="action-button" aria-label="Delete interview">
-                🗑️
+              <button
+                type="button"
+                className="action-button"
+                aria-label="Delete interview"
+                onClick={() => handleDelete(id)}
+                disabled={!id || deletingId === id}
+              >
+                {deletingId === id ? "⌛" : "🗑️"}
               </button>
             </div>
           </td>
@@ -168,6 +184,32 @@ export default function Interviews() {
     });
   };
 
+  const handleDelete = async (id) => {
+    if (!id) {
+      return;
+    }
+
+    const confirmed = window.confirm("Are you sure you want to delete this interview?");
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDeletingId(id);
+    setActionError("");
+
+    try {
+      await deleteInterview(id);
+      setInterviews((previous) =>
+        Array.isArray(previous) ? previous.filter((interview) => interview?.id !== id) : previous,
+      );
+    } catch (deleteError) {
+      console.error("Failed to delete interview", deleteError);
+      setActionError("Failed to delete interview. Please try again.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
   return (
     <div className="page-layout">
       <header className="header header--brand-left">
@@ -192,6 +234,11 @@ export default function Interviews() {
             </div>
 
             <div className="table-wrapper">
+              {actionError ? (
+                <div className="error-text" role="alert">
+                  {actionError}
+                </div>
+              ) : null}
               <table className="interviews-table">
                 <thead>
                   <tr>
