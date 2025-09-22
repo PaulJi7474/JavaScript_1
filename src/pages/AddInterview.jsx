@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createInterview } from "../api/app";
 import "./interviewsCss.css";
+const STATUS_OPTIONS = ["Draft", "Published"];
 
 export default function InterviewForm() {
   const navigate = useNavigate();
@@ -9,7 +10,7 @@ export default function InterviewForm() {
     title: "",
     jobRole: "",
     description: "",
-    status: "Draft",
+    status: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -41,11 +42,12 @@ export default function InterviewForm() {
 
     try {
       const data = await createInterview({
-        // id: form.id,
-        title: form.title,
-        job_role: form.jobRole,
-        description: form.description,
-        status: form.status,
+        title: form.title.trim(),
+        job_role: form.jobRole.trim(),
+        description: form.description.trim(),
+        status: STATUS_OPTIONS.includes(form.status)
+          ? form.status
+          : STATUS_OPTIONS[0],
       });
 
       const interviewId =
@@ -142,8 +144,11 @@ export default function InterviewForm() {
                   onChange={onChange}
                   required
                 >
-                  <option value="Draft">Draft</option>
-                  <option value="Published">Published</option>
+                  {STATUS_OPTIONS.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
                 </select>
               </div>
 
