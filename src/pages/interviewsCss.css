@@ -153,6 +153,16 @@
   text-decoration: underline;
 }
 
+.text-center {
+  text-align: center;
+  padding: 24px 0;
+  color: #6b7280;
+}
+
+.error-text {
+  color: #b91c1c;
+}
+
 .take-interview__details {
   width: 100%;
   background-color: #f8faff;
