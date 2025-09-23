@@ -1,15 +1,32 @@
 import React from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import "./interviewsCss.css";
 import { APPLICANTS } from "../data/applicantsData";
 
 export default function TakeInterview() {
   const { state } = useLocation();
+  const navigate = useNavigate();
   const { id: interviewId, applicantId } = useParams();
   const interviewTitle = state?.interviewTitle || "Untitled Interview";
   const applicantFromState = state?.applicant;
   const applicantDetails =
     applicantFromState || APPLICANTS.find((applicant) => applicant.id === applicantId);
+
+  const handleStartInterview = () => {
+    if (!interviewId || !applicantDetails?.id) {
+      return;
+    }
+
+    navigate(
+      `/interviews/${interviewId}/applicants/${applicantDetails.id}/interview/questions`,
+      {
+        state: {
+          interviewTitle,
+          applicant: applicantDetails,
+        },
+      },
+    );
+  }
 
   if (!applicantDetails) {
     return (
@@ -79,6 +96,7 @@ export default function TakeInterview() {
               <button
                 type="button"
                 className="rect-button rect-button--primary start-interview__button"
+                onClick={handleStartInterview}
               >
                 Start Interview
               </button>
