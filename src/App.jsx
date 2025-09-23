@@ -8,6 +8,7 @@ import AddQuestion from "./pages/AddQuestion";
 import QuestionsPages from "./pages/QuestionsPages";
 import Applicants from "./pages/Applicants";
 import AddApplicant from "./pages/AddApplicant"
+import ThankYou from "./pages/ThankYou";
 
 import "./App.css";
 
@@ -26,6 +27,10 @@ export default function App() {
         />
         <Route path="/interviews/:id/applicants" element={<Applicants />} />
         <Route path="/interviews/:id/applicants/new" element={<AddApplicant />} />
+        <Route
+          path="interviews/:id/applicants/:applicantId/interview/completed"
+          element={<ThankYou />}
+        />
         <Route
           path="interviews/:id/applicants/:applicantId/interview"
           element={<TakeInterview />}

@@ -17,7 +17,7 @@
   border-bottom: 1px solid #d8dee9;
 }
 
-.header--brand-left {
+.header_brand_left {
   justify-content: space-between;
 }
 
@@ -196,6 +196,84 @@
 
 .error-text {
   color: #b91c1c;
+}
+
+.thank-you-card {
+  margin: 48px auto 0;
+  max-width: 680px;
+  text-align: center;
+  border-color: #d9dce8;
+  box-shadow: 0 20px 42px rgba(15, 23, 42, 0.08);
+}
+
+.thank-you-card__body {
+  align-items: center;
+  gap: 18px;
+  padding: 48px 56px;
+}
+
+.thank-you-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #e6f4ff;
+  color: #0f62fe;
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.thank-you-card__title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1f2933;
+}
+
+.thank-you-card__subtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: #4b5563;
+}
+
+.thank-you-card__details {
+  width: 100%;
+  margin-top: 12px;
+  padding: 18px 22px;
+  background: #f4f6fb;
+  border: 1px solid #e0e5f0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.thank-you-card__detail {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  font-size: 1rem;
+  color: #1f2933;
+  gap: 4px;
+}
+
+.thank-you-card__detail-label {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.thank-you-card__detail-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.thank-you-card__actions {
+  margin-top: 12px;
 }
 
 .take-interview__details {

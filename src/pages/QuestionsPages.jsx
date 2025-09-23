@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { getQuestionsByInterview } from "../api/questions";
 import { APPLICANTS } from "../data/applicantsData";
 import "./interviewsCss.css";
@@ -44,6 +44,7 @@ const getQuestionDifficulty = (question) => {
 export default function QuestionsPages() {
   const { id: interviewId, applicantId } = useParams();
   const { state } = useLocation();
+  const navigate = useNavigate();
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -79,6 +80,7 @@ export default function QuestionsPages() {
           return;
         }
 
+        console.error("Failed to load questions", fetchError);
         setError("Failed to load questions. Please try again later.");
         setQuestions([]);
       } finally {
@@ -131,6 +133,20 @@ export default function QuestionsPages() {
 
     if (isLastQuestion) {
       setHasSubmitted(true);
+      const applicantIdentifier = applicantDetails?.id || applicantId;
+
+      if (interviewId && applicantIdentifier) {
+        navigate(
+          `/interviews/${interviewId}/applicants/${applicantIdentifier}/interview/completed`,
+          {
+            state: {
+              interviewTitle,
+              applicant: applicantDetails,
+            },
+          },
+        );
+      }
+
       return;
     }
 
@@ -145,7 +161,7 @@ export default function QuestionsPages() {
 
   return (
     <div className="page-layout take-interview-page">
-      <header className="header header--brand-left">
+      <header className="header header_brand_left">
         <h1 className="header__title header__title--left">
           ReadySetHire - AI-Powered Interview Platform
         </h1>

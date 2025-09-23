@@ -149,7 +149,7 @@ export default function AddApplicant() {
 
   return (
     <div className="page-layout">
-      <header className="header header--brand-left">
+      <header className="header header_brand_left">
         <h1 className="header__title header__title--left">
           ReadySetHire - AI-Powered Interview Platform
         </h1>
