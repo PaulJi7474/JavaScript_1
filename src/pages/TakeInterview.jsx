@@ -41,7 +41,7 @@ export default function TakeInterview() {
   }
 
   return (
-    <div className="page-layout">
+    <div className="page-layout take-interview-page">
       <header className="header header--brand-left">
         <h1 className="header__title header__title--left">
           ReadySetHire - AI-Powered Interview Platform
@@ -61,12 +61,11 @@ export default function TakeInterview() {
             </Link>
           </div>
 
-          <section className="card card--centered">
-            <div className="card__body">
-              
+          <section className="card card--centered take-interview-card">
+            <div className="card__body card__body--take-interview">
+              <h2 className="card__title">Welcome to Your Interview</h2>
               <div className="take-interview__details">
                 <div className="take-interview__section">
-                  <h2 className="card__title">Welcome to Your Interview</h2>
                   <h3 className="take-interview__heading">Applicant Details:</h3>
                   <p>{applicantDetails.name}</p>
                   <p>{applicantDetails.email}</p>
@@ -76,11 +75,13 @@ export default function TakeInterview() {
                   <p>{interviewTitle}</p>
                   <p>Interview for {interviewTitle} position</p>
                 </div>
-                <button type="button" className="rect-button rect-button--primary start-interview__button">
+              </div>
+              <button
+                type="button"
+                className="rect-button rect-button--primary start-interview__button"
+              >
                 Start Interview
               </button>
-              </div>
-
             </div>
           </section>
         </div>

@@ -4,6 +4,10 @@
   flex-direction: column;
 }
 
+.take-interview-page {
+  background-color: #f5f7fb;
+}
+
 .header {
   display: flex;
   align-items: center;
@@ -11,6 +15,10 @@
   padding: 20px 30px;
   background: #e9eaee;
   border-bottom: 1px solid #d8dee9;
+}
+
+.header--brand-left {
+  justify-content: space-between;
 }
 
 .header__left {
@@ -50,11 +58,19 @@
   text-align: right;
 }
 
+.header__title--left {
+  text-align: left;
+}
+
 .main {
   flex: 1;
   padding: 48px;
   display: flex;
   justify-content: center;
+}
+
+.take-interview-page .main {
+  align-items: flex-start;
 }
 
 .content {
@@ -64,6 +80,10 @@
 
 .content--narrow {
   max-width: 720px;
+}
+
+.take-interview-page .content--narrow {
+  width: 100%;
 }
 
 .card {
@@ -84,6 +104,14 @@
   justify-content: center;
 }
 
+.take-interview-card {
+  width: 100%;
+  max-width: 720px;
+  margin: 24px auto 0;
+  border-color: #d9dce8;
+  box-shadow: 0 20px 42px rgba(15, 23, 42, 0.08);
+}
+
 .card__body {
   padding: 40px 48px;
   display: flex;
@@ -91,6 +119,13 @@
   gap: 28px;
   align-items: center;
   text-align: center;
+}
+
+.card__body--take-interview {
+  align-items: flex-start;
+  text-align: left;
+  gap: 24px;
+  padding: 36px 44px;
 }
 
 .card__header {
@@ -166,7 +201,8 @@
 .take-interview__details {
   width: 100%;
   background-color: #f8faff;
-  border: 1px solid #e5eaf4;
+  border: 1px solid #e0e6f3;
+  border-radius: 6px;
   padding: 24px 28px;
   display: grid;
   gap: 20px;
@@ -187,8 +223,9 @@
 }
 
 .start-interview__button {
-  padding: 12px 20px;
+  padding: 14px 32px;
   font-size: 1rem;
+  align-self: flex-start;
 }
 
 .form {
