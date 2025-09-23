@@ -5,6 +5,53 @@ import "./interviewsCss.css";
 
 const DEFAULT_STATUS = "Not Started";
 
+const KNOWN_TITLES = new Set([
+  "mr",
+  "mrs",
+  "ms",
+  "miss",
+  "mx",
+  "dr",
+  "prof",
+]);
+
+function parseApplicantName(rawName) {
+  if (typeof rawName !== "string") {
+    return { title: "", firstname: "", surname: "" };
+  }
+
+  const segments = rawName
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (!segments.length) {
+    return { title: "", firstname: "", surname: "" };
+  }
+
+  const normalizedFirst = segments[0].replace(/\./g, "").toLowerCase();
+  let title = "";
+  let remainingSegments = segments;
+
+  if (KNOWN_TITLES.has(normalizedFirst)) {
+    [title, ...remainingSegments] = segments;
+  }
+
+  if (!remainingSegments.length) {
+    return { title, firstname: "", surname: "" };
+  }
+
+  if (remainingSegments.length === 1) {
+    return { title, firstname: remainingSegments[0], surname: "" };
+  }
+
+  return {
+    title,
+    firstname: remainingSegments[0],
+    surname: remainingSegments.slice(1).join(" "),
+  };
+}
+
 export default function AddApplicant() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -66,10 +113,22 @@ export default function AddApplicant() {
       phone: form.phone.trim(),
     };
 
+    if (!trimmedForm.name) {
+      setError("Name is required.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    const parsedName = parseApplicantName(trimmedForm.name);
+
     try {
       await createApplicant({
-        ...trimmedForm,
-        status: DEFAULT_STATUS,
+        title: parsedName.title,
+        firstname: parsedName.firstname,
+        surname: parsedName.surname,
+        email_address: trimmedForm.email,
+        phone_number: trimmedForm.phone,
+        interview_status: DEFAULT_STATUS,
         interview_id: interviewReference,
       });
 

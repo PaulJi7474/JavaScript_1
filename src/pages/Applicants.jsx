@@ -79,7 +79,11 @@ export default function Applicants() {
     }
 
     return applicants.map((entry, index) => {
+      const splitName = [entry?.title, entry?.firstname, entry?.surname]
+        .filter((segment) => typeof segment === "string" && segment.trim())
+        .join(" ");
       const name =
+        (splitName && splitName.trim()) ||
         (typeof entry?.name === "string" && entry.name.trim()) ||
         (typeof entry?.full_name === "string" && entry.full_name.trim()) ||
         "Unnamed Applicant";
@@ -94,6 +98,7 @@ export default function Applicants() {
       const status =
         (typeof entry?.status === "string" && entry.status.trim()) ||
         (typeof entry?.application_status === "string" && entry.application_status.trim()) ||
+        (typeof entry?.interview_status === "string" && entry.interview_status.trim()) ||
         "Not Started";
       const identifier =
         entry?.id ??
