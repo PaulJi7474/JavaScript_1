@@ -8,6 +8,11 @@ export function getApplicantsByInterview(interviewId) {
   return apiRequest(`/applicant?interview_id=eq.${interviewId}`);
 }
 
+export async function getApplicantCountByInterview(interviewId) {
+  const rows = await getApplicantsByInterview(interviewId);
+  return Array.isArray(rows) ? rows.length : 0;
+}
+
 export function createApplicant(applicant) {
   return apiRequest("/applicant", "POST", applicant);
 }
