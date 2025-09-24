@@ -40,7 +40,7 @@ const getApplicantName = (applicant) => {
 };
 
 export default function ThankYou() {
-  const { id: interviewId, applicantId } = useParams();
+  const { applicantId } = useParams();
   const { state } = useLocation();
 
   const interviewTitle = useMemo(() => {

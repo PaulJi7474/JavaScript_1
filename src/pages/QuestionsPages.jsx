@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { getQuestionsByInterview } from "../api/questions";
 import { APPLICANTS } from "../data/applicantsData";
 import "./interviewsCss.css";
+import { createApplicantAnswer } from "../api/applicantAnswers";
 
 const getQuestionText = (question) => {
   if (!question || typeof question !== "object") {
@@ -50,6 +51,21 @@ export default function QuestionsPages() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [microphonePermissionGranted, setMicrophonePermissionGranted] = useState(false);
+  const [hasStartedRecording, setHasStartedRecording] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [hasAnsweredQuestion, setHasAnsweredQuestion] = useState(false);
+  const [isRecognitionActive, setIsRecognitionActive] = useState(false);
+  const [transcript, setTranscript] = useState("");
+  const [interimTranscript, setInterimTranscript] = useState("");
+  const [recorderError, setRecorderError] = useState("");
+  const [uploadError, setUploadError] = useState("");
+  const [uploadingAnswer, setUploadingAnswer] = useState(false);
+
+  const recognitionConstructorRef = useRef(null);
+  const recognitionRef = useRef(null);
+  const recognitionStatusRef = useRef({ shouldRestart: false });
+  const finalTranscriptRef = useRef("");
 
   const interviewTitle =
     (typeof state?.interviewTitle === "string" && state.interviewTitle.trim()) ||
@@ -57,6 +73,38 @@ export default function QuestionsPages() {
   const applicantFromState = state?.applicant;
   const applicantDetails =
     applicantFromState || APPLICANTS.find((applicant) => applicant.id === applicantId);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const userAllowedMicrophone = window.confirm(
+      "ReadySetHire needs to use your microphone to record answers. Do you allow access?",
+    );
+
+    if (!userAllowedMicrophone) {
+      navigate(`/interviews/${interviewId}/applicants`, { replace: true });
+      return;
+    }
+
+    setMicrophonePermissionGranted(true);
+  }, [navigate, interviewId]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const Constructor = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!Constructor) {
+      setRecorderError("Speech recognition is not supported in this browser.");
+      return;
+    }
+
+    recognitionConstructorRef.current = Constructor;
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -110,6 +158,12 @@ export default function QuestionsPages() {
   const progressLabel = hasQuestions
     ? `Question ${currentIndex + 1} of ${totalQuestions}`
     : "No questions available";
+  const displayedTranscript = useMemo(() => {
+    const segments = [transcript.trim(), interimTranscript.trim()].filter(
+      (segment) => segment && segment.length > 0,
+    );
+    return segments.join(" ");
+  }, [transcript, interimTranscript]);
 
   const primaryButtonLabel = !hasQuestions
     ? "No questions available"
@@ -119,12 +173,26 @@ export default function QuestionsPages() {
         : "Submit interview"
       : "Next Question";
   const isPrimaryButtonDisabled =
-    !hasQuestions || (isLastQuestion && hasSubmitted) || loading || Boolean(error);
+    !hasQuestions || (isLastQuestion && hasSubmitted) || loading || Boolean(error) || uploadingAnswer;
   const actionMessage = hasSubmitted
     ? "Submission saved"
     : !hasQuestions
       ? "Add questions to this interview to begin"
-      : "Audio recorder is ready";
+      : uploadingAnswer
+        ? "Saving your answer..."
+        : uploadError
+          ? uploadError
+          : recorderError
+            ? recorderError
+            : hasAnsweredQuestion
+              ? "Question answered"
+              : hasStartedRecording
+                ? isPaused
+                  ? "Recording paused"
+                  : isRecognitionActive
+                    ? "Recording in progress"
+                    : "Audio recorder is getting ready"
+                : "Audio recorder is ready. Please click Stop to submit your answer.";
 
   const handlePrimaryAction = () => {
     if (!hasQuestions || loading || error) {
@@ -157,6 +225,239 @@ export default function QuestionsPages() {
       }
       return nextIndex;
     });
+  };
+
+  const resetRecorderState = useCallback(() => {
+    setHasStartedRecording(false);
+    setIsPaused(false);
+    setHasAnsweredQuestion(false);
+    setIsRecognitionActive(false);
+    setTranscript("");
+    setInterimTranscript("");
+    if (recognitionConstructorRef.current) {
+      setRecorderError("");
+    }
+    setUploadError("");
+    setUploadingAnswer(false);
+    recognitionStatusRef.current = { shouldRestart: false };
+    finalTranscriptRef.current = "";
+    if (recognitionRef.current) {
+      recognitionRef.current.onresult = null;
+      recognitionRef.current.onerror = null;
+      recognitionRef.current.onend = null;
+      recognitionRef.current.onstart = null;
+      try {
+        recognitionRef.current.stop();
+      } catch (stopError) {
+        console.error("Failed to stop recognition", stopError);
+      }
+      recognitionRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    resetRecorderState();
+  }, [resetRecorderState, currentQuestion?.id]);
+
+  useEffect(() => {
+    return () => {
+      resetRecorderState();
+    };
+  }, [resetRecorderState]);
+
+  const ensureRecognitionInstance = () => {
+    if (!recognitionConstructorRef.current) {
+      setRecorderError("Speech recognition is not supported in this browser.");
+      return null;
+    }
+
+    if (!recognitionRef.current) {
+      const recognition = new recognitionConstructorRef.current();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = "en-US";
+
+      recognition.onstart = () => {
+        setIsRecognitionActive(true);
+        setRecorderError("");
+      };
+
+      recognition.onresult = (event) => {
+        let interim = "";
+        let finalChunk = "";
+
+        for (let i = event.resultIndex; i < event.results.length; i += 1) {
+          const result = event.results[i];
+          const textSegment = result[0]?.transcript ?? "";
+          if (result.isFinal) {
+            finalChunk += textSegment;
+          } else {
+            interim += textSegment;
+          }
+        }
+
+        if (finalChunk) {
+          finalTranscriptRef.current = `${`${finalTranscriptRef.current} ${finalChunk}`.trim()}`;
+          setTranscript(finalTranscriptRef.current);
+        }
+
+        setInterimTranscript(interim);
+      };
+
+      recognition.onerror = (event) => {
+        if (event.error === "no-speech") {
+          return;
+        }
+        console.error("Speech recognition error", event.error);
+        setRecorderError("We couldn't capture audio. Please speak clearly and try again.");
+      };
+
+      recognition.onend = () => {
+        setIsRecognitionActive(false);
+        if (recognitionStatusRef.current.shouldRestart) {
+          try {
+            recognition.start();
+          } catch (startError) {
+            console.error("Failed to restart recognition", startError);
+            setRecorderError("Microphone stopped unexpectedly. Please resume to continue.");
+            setIsPaused(true);
+            recognitionStatusRef.current.shouldRestart = false;
+          }
+        }
+      };
+
+      recognitionRef.current = recognition;
+    }
+
+    return recognitionRef.current;
+  };
+
+  const getFullTranscript = () => {
+    const finalText = finalTranscriptRef.current.trim();
+    const interimText = interimTranscript.trim();
+    const segments = [finalText, interimText].filter((segment) => segment && segment.length > 0);
+    return segments.join(" ");
+  };
+
+  const handleStartRecording = () => {
+    if (hasAnsweredQuestion || !microphonePermissionGranted) {
+      return;
+    }
+
+    const recognition = ensureRecognitionInstance();
+    if (!recognition) {
+      return;
+    }
+
+    setHasStartedRecording(true);
+    setIsPaused(false);
+    setRecorderError("");
+    setUploadError("");
+    setTranscript("");
+    setInterimTranscript("");
+    finalTranscriptRef.current = "";
+    recognitionStatusRef.current = { shouldRestart: true };
+
+    try {
+      recognition.start();
+    } catch (startError) {
+      if (startError.name !== "InvalidStateError") {
+        console.error("Failed to start recognition", startError);
+        setRecorderError("Unable to start recording. Please try again.");
+      }
+    }
+  };
+
+  const handlePauseResume = () => {
+    const recognition = recognitionRef.current;
+    if (!recognition || hasAnsweredQuestion) {
+      return;
+    }
+
+    if (isPaused) {
+      recognitionStatusRef.current = { shouldRestart: true };
+      setIsPaused(false);
+      setRecorderError("");
+      try {
+        recognition.start();
+      } catch (startError) {
+        if (startError.name !== "InvalidStateError") {
+          console.error("Failed to resume recognition", startError);
+          setRecorderError("Unable to resume recording. Please try again.");
+        }
+      }
+      return;
+    }
+
+    recognitionStatusRef.current = { shouldRestart: false };
+    setIsPaused(true);
+    setIsRecognitionActive(false);
+    try {
+      recognition.stop();
+    } catch (stopError) {
+      console.error("Failed to pause recognition", stopError);
+      setRecorderError("Unable to pause recording. Please try again.");
+    }
+  };
+
+  const handleEndRecording = async () => {
+    const recognition = recognitionRef.current;
+
+    recognitionStatusRef.current = { shouldRestart: false };
+    setIsPaused(false);
+    setIsRecognitionActive(false);
+    setHasAnsweredQuestion(true);
+
+    if (recognition) {
+      try {
+        recognition.stop();
+      } catch (stopError) {
+        console.error("Failed to stop recognition", stopError);
+      }
+    }
+
+    const recordedTranscript = getFullTranscript();
+
+    if (!recordedTranscript) {
+      setUploadError("No speech detected. Your answer was not saved.");
+      return;
+    }
+
+    if (!currentQuestion) {
+      setUploadError("Unable to determine the question to save your answer.");
+      return;
+    }
+
+    const questionIdentifier =
+      typeof currentQuestion.id !== "undefined"
+        ? currentQuestion.id
+        : currentQuestion.question_id ?? null;
+
+    if (questionIdentifier === null || typeof questionIdentifier === "undefined") {
+      setUploadError("Unable to determine the question to save your answer.");
+      return;
+    }
+
+    const payload = {
+      interview_id: Number.isNaN(Number(interviewId)) ? interviewId : Number(interviewId),
+      question_id: Number.isNaN(Number(questionIdentifier))
+        ? questionIdentifier
+        : Number(questionIdentifier),
+      applicant_id: Number.isNaN(Number(applicantId)) ? applicantId : Number(applicantId),
+      answer: recordedTranscript,
+    };
+
+    setUploadingAnswer(true);
+    setUploadError("");
+
+    try {
+      await createApplicantAnswer(payload);
+    } catch (submitError) {
+      console.error("Failed to submit applicant answer", submitError);
+      setUploadError("We could not save your answer. Please contact the interviewer.");
+    } finally {
+      setUploadingAnswer(false);
+    }
   };
 
   return (
@@ -229,13 +530,74 @@ export default function QuestionsPages() {
                       <section className="audio-recorder">
                         <h4 className="audio-recorder__title">Audio recorder</h4>
                         <div className="audio-recorder__controls">
-                          <button type="button" className="rect-button rect-button--outline">
-                            ▶ Start Recording
-                          </button>
-                          <p className="audio-recorder__hint">
-                            Click Start Recording to begin
-                          </p>
+                          {!microphonePermissionGranted ? (
+                            <p className="audio-recorder__hint">Microphone permission is required.</p>
+                          ) : !recognitionConstructorRef.current ? (
+                            <p
+                              className={`audio-recorder__hint${
+                                recorderError ? " audio-recorder__hint--error" : ""
+                              }`}
+                            >
+                              {recorderError || "Preparing microphone..."}
+                            </p>
+                          ) : !hasStartedRecording ? (
+                            <>
+                              <button
+                                type="button"
+                                className="rect-button rect-button--outline"
+                                onClick={handleStartRecording}
+                                disabled={hasAnsweredQuestion || uploadingAnswer}
+                              >
+                                ▶ Start Recording
+                              </button>
+                              <p className="audio-recorder__hint">
+                                Click Start Recording to begin
+                              </p>
+                            </>
+                          ) : !hasAnsweredQuestion ? (
+                            <div className="audio-recorder__button-group">
+                              <button
+                                type="button"
+                                className="rect-button rect-button--outline"
+                                onClick={handlePauseResume}
+                                disabled={uploadingAnswer}
+                                >
+                                  {isPaused ? "▶ Resume" : "⏸ Pause"}
+                              </button>
+                              <button
+                                type="button"
+                                className="rect-button rect-button--danger"
+                                onClick={handleEndRecording}
+                                disabled={uploadingAnswer}
+                              >
+                                ■ End
+                              </button>
+                            </div>
+                          ) : (
+                            <p className="audio-recorder__hint audio-recorder__hint--success">
+                              Question answered
+                            </p>
+                          )}
                         </div>
+                        {displayedTranscript && (
+                          <div className="audio-recorder__transcript" aria-live="polite">
+                            <p className="audio-recorder__transcript-label">Transcribed answer:</p>
+                            <p className="audio-recorder__transcript-text">
+                              {displayedTranscript}
+                            </p>
+                          </div>
+                        )}
+                        {recorderError && recognitionConstructorRef.current && (
+                          <p className="audio-recorder__hint audio-recorder__hint--error">{recorderError}</p>
+                        )}
+                        {hasAnsweredQuestion && !uploadError && (
+                          <p className="audio-recorder__hint audio-recorder__hint--success">
+                            Question answered
+                          </p>
+                        )}
+                        {uploadError && (
+                          <p className="audio-recorder__hint audio-recorder__hint--error">{uploadError}</p>
+                        )}
                       </section>
                     </>
                   ) : (

@@ -197,7 +197,7 @@ export default function Applicants() {
               className="rect-button rect-button--ghost"
               onClick={() => handleCopyLink(applicant.id)}
             >
-              Copy Link
+              🔗 Copy Link
             </button>
             <Link
               to={`/interviews/${interviewId}/applicants/${applicant.id}/interview`}
