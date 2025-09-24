@@ -241,7 +241,7 @@ export default function Applicants() {
             ← Back to Interviews
           </Link>
 
-          <section className="card">
+          <section className="card card--table">
             <div className="card__header">
               <div>
                 <h2 className="card__title">Applicants Management</h2>

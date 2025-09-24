@@ -98,6 +98,12 @@
   overflow: hidden;
 }
 
+.card--table {
+  width: fit-content;
+  max-width: 90vw;
+  margin: 0 auto;
+}
+
 .card--form {
   padding: 32px;
   overflow: visible;

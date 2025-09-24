@@ -339,7 +339,7 @@ export default function Interviews() {
 
       <main className="main">
         <div className="content">
-          <section className="card">
+          <section className="card card--table">
             <div className="card__header">
               <h2 className="card__title">Interviews Management</h2>
               <Link to="/interviews/new" className="add-interview">
