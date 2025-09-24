@@ -565,7 +565,7 @@ export default function QuestionsPages() {
                                 ▶ Start Recording
                               </button>
                               <p className="audio-recorder__hint">
-                                Click Start Recording to begin
+                                Click Start Recording to begin. Your recording will be automatically converted to text.
                               </p>
                             </>
                           ) : !hasAnsweredQuestion ? (

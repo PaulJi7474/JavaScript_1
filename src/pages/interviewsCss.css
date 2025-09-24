@@ -284,11 +284,14 @@
   letter-spacing: 0.05em;
   font-size: 0.75rem;
   color: #6b7280;
+  text-align: center;
+  margin: -5px 0
 }
 
 .thank-you-card__detail-value {
   font-size: 1.1rem;
   font-weight: 600;
+  text-align: center;
 }
 
 .thank-you-card__actions {
