@@ -88,7 +88,7 @@ export default function Questions() {
     };
   }, [id]);
 
-  const handleAddQuestion = () => {
+const handleAddQuestion = () => {
     if (!id) {
       return;
     }
@@ -97,6 +97,17 @@ export default function Questions() {
       state: { interviewTitle },
     });
   };
+
+  const handleEditQuestion = (questionId) => {
+    if (!questionId || !id) {
+      return;
+    }
+
+    navigate(`/interviews/${id}/questions/${questionId}/edit`, {
+      state: { interviewTitle },
+    });
+  };
+
 
   const handleDeleteQuestion = async (questionId) => {
     if (!questionId || pendingDeletionId) {
@@ -180,7 +191,13 @@ export default function Questions() {
           </td>
           <td>
             <div className="actions">
-              <button type="button" className="action-button" aria-label="Edit question">
+              <button
+                type="button"
+                className="action-button"
+                aria-label="Edit question"
+                onClick={() => handleEditQuestion(questionId)}
+                disabled={!questionId}
+              >
                 ✏️
               </button>
               <button

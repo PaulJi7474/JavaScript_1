@@ -6,6 +6,7 @@ import EditInterview from "./pages/EditInterview";
 import Questions from "./pages/Questions";
 import AddQuestion from "./pages/AddQuestion";
 import QuestionsPages from "./pages/QuestionsPages";
+import EditQuestion from "./pages/EditQuestion";
 import Applicants from "./pages/Applicants";
 import EditApplicant from "./pages/EditApplicant";
 import AddApplicant from "./pages/AddApplicant"
@@ -25,6 +26,10 @@ export default function App() {
         <Route
           path="interviews/:id/applicants/:applicantId/interview/questions"
           element={<QuestionsPages />}
+        />
+        <Route
+          path="/interviews/:id/questions/:questionId/edit"
+          element={<EditQuestion />}
         />
         <Route path="/interviews/:id/applicants" element={<Applicants />} />
         <Route path="/interviews/:id/applicants/new" element={<AddApplicant />} />

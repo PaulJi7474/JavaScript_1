@@ -17,6 +17,22 @@ export function createQuestion(question) {
   return apiRequest("/question", "POST", question);
 }
 
+export function getQuestion(questionId) {
+  if (!questionId) {
+    return Promise.reject(new Error("Question identifier is required"));
+  }
+
+  return apiRequest(`/question?id=eq.${questionId}`);
+}
+
+export function updateQuestion(questionId, updates) {
+  if (!questionId) {
+    return Promise.reject(new Error("Question identifier is required"));
+  }
+
+  return apiRequest(`/question?id=eq.${questionId}`, "PATCH", updates);
+}
+
 export function deleteQuestion(questionId) {
   if (!questionId) {
     return Promise.reject(new Error("Question identifier is required"));
