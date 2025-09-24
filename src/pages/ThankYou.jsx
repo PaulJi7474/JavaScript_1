@@ -99,10 +99,10 @@ export default function ThankYou() {
 
               <div className="thank-you-card__actions">
                 <Link
-                  to={interviewId ? `/interviews/${interviewId}/applicants` : "/"}
+                  to={"/"}
                   className="rect-button rect-button--primary"
                 >
-                  Back to Applicants
+                  Back to interviews
                 </Link>
               </div>
             </div>
