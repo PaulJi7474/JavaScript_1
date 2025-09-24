@@ -4,6 +4,7 @@ import { getQuestionsByInterview } from "../api/questions";
 import { APPLICANTS } from "../data/applicantsData";
 import "./interviewsCss.css";
 import { createApplicantAnswer } from "../api/applicantAnswers";
+import { updateApplicantStatus } from "../api/applicants";
 
 const getQuestionText = (question) => {
   if (!question || typeof question !== "object") {
@@ -194,14 +195,27 @@ export default function QuestionsPages() {
                     : "Audio recorder is getting ready"
                 : "Audio recorder is ready. Please click Stop to submit your answer.";
 
-  const handlePrimaryAction = () => {
+  const handlePrimaryAction = async () => {
     if (!hasQuestions || loading || error) {
       return;
     }
 
     if (isLastQuestion) {
+      const completedStatus = "Completed";
       setHasSubmitted(true);
       const applicantIdentifier = applicantDetails?.id || applicantId;
+      const updatedApplicant =
+        applicantDetails && typeof applicantDetails === "object"
+          ? { ...applicantDetails, status: completedStatus, interview_status: completedStatus }
+          : applicantDetails;
+
+      if (applicantIdentifier) {
+        try {
+          await updateApplicantStatus(applicantIdentifier, completedStatus);
+        } catch (statusError) {
+          console.error("Failed to update applicant status", statusError);
+        }
+      }
 
       if (interviewId && applicantIdentifier) {
         navigate(
@@ -209,7 +223,7 @@ export default function QuestionsPages() {
           {
             state: {
               interviewTitle,
-              applicant: applicantDetails,
+              applicant: updatedApplicant,
             },
           },
         );
