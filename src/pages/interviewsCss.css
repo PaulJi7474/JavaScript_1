@@ -114,12 +114,16 @@
   justify-content: center;
 }
 
+.take-interview-card.card--centered {
+  justify-content: flex-start;
+}
 .take-interview-card {
   width: 100%;
   max-width: 720px;
   margin: 24px auto 0;
   border-color: #d9dce8;
   box-shadow: 0 20px 42px rgba(15, 23, 42, 0.08);
+  gap: 10px;
 }
 
 .card__body {
@@ -136,6 +140,7 @@
   text-align: left;
   gap: 24px;
   padding: 36px 44px;
+  width: 100%;
 }
 
 .card__header {
@@ -288,12 +293,10 @@
 
 .take-interview__details {
   width: 100%;
-  background-color: #f8faff;
-  border: 1px solid #e0e6f3;
-  border-radius: 6px;
   padding: 24px 28px;
   display: grid;
   gap: 20px;
+  justify-items: start;
 }
 
 .take-interview__section {
@@ -301,6 +304,10 @@
   flex-direction: column;
   gap: 6px;
   color: #1f2933;
+}
+.take-interview__section p {
+  margin: 0;
+  line-height: 1.35;
 }
 
 .take-interview__heading {
