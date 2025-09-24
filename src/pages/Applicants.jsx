@@ -56,7 +56,10 @@ export default function Applicants() {
   }, [fetchApplicants]);
 
   useEffect(() => {
-    if (successMessage === "Add applicants success") {
+    if (
+      successMessage === "Add applicants success" ||
+      successMessage === "Applicant updated successfully"
+    ) {
       fetchApplicants();
     }
   }, [successMessage, fetchApplicants]);
@@ -144,6 +147,7 @@ export default function Applicants() {
         email,
         phone,
         status,
+        original: entry,
       };
     });
   }, [applicants]);
@@ -205,6 +209,16 @@ export default function Applicants() {
               className="rect-button rect-button--outline"
             >
               Take Interview
+            </Link>
+            <Link
+              to={`/interviews/${interviewId}/applicants/${applicant.id}/edit`}
+              state={{
+                interviewTitle,
+                applicant: applicant.original || applicant,
+              }}
+              className="action-button Edit interview"
+            >
+              ✏️
             </Link>
           </div>
         </td>

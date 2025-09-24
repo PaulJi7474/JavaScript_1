@@ -102,6 +102,8 @@
   width: fit-content;
   max-width: 90vw;
   margin: 0 auto;
+  height: 100%;   /* 表格占满父容器宽度 */
+  table-layout: fixed;  /* 固定列宽，保证分配均匀 */
 }
 
 .card--form {
@@ -197,6 +199,8 @@
   width: fit-content;
   text-align: left;
   align-self: flex-start;
+  line-height: 60px;
+  font-size: 18px;
 }
 
 .back-link:hover {
@@ -592,6 +596,8 @@
   border: 1px solid transparent;
   cursor: pointer;
   transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  text-align: center;
+  margin-left: 0px;
 }
 
 .rect-button--primary {
@@ -616,9 +622,10 @@
   align-items: center;
   gap: 6px;         
   font-size: 10px;  
-  padding: 4px 8px; 
+  padding: 4px 4px; 
   cursor: pointer;
   white-space: nowrap;
+  height: 25px;
 }
 
 .rect-button--outline:hover {
@@ -652,9 +659,10 @@
   align-items: center;
   gap: 6px;         
   font-size: 10px;   
-  padding: 4px 8px; 
+  padding: 4px 4px; 
   cursor: pointer;
   white-space: nowrap;
+  height: 25px;
 }
 
 .rect-button--ghost:hover {

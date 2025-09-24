@@ -17,6 +17,34 @@ export function createApplicant(applicant) {
   return apiRequest("/applicant", "POST", applicant);
 }
 
+export function getApplicant(applicantId) {
+  if (!applicantId) {
+    return Promise.resolve(null);
+  }
+
+  const encodedId = encodeURIComponent(applicantId);
+
+  return apiRequest(`/applicant?id=eq.${encodedId}`).then((rows) => {
+    if (Array.isArray(rows)) {
+      return rows[0] ?? null;
+    }
+
+    return rows ?? null;
+  });
+}
+
+export function updateApplicant(applicantId, applicant) {
+  if (!applicantId || !applicant) {
+    return Promise.reject(
+      new Error("Applicant id and update payload are required"),
+    );
+  }
+
+  const encodedId = encodeURIComponent(applicantId);
+
+  return apiRequest(`/applicant?id=eq.${encodedId}`, "PATCH", applicant);
+}
+
 export function updateApplicantStatus(applicantId, status) {
   const normalizedStatus = typeof status === "string" ? status.trim() : "";
 

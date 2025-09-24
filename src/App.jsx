@@ -7,6 +7,7 @@ import Questions from "./pages/Questions";
 import AddQuestion from "./pages/AddQuestion";
 import QuestionsPages from "./pages/QuestionsPages";
 import Applicants from "./pages/Applicants";
+import EditApplicant from "./pages/EditApplicant";
 import AddApplicant from "./pages/AddApplicant"
 import ThankYou from "./pages/ThankYou";
 
@@ -27,6 +28,10 @@ export default function App() {
         />
         <Route path="/interviews/:id/applicants" element={<Applicants />} />
         <Route path="/interviews/:id/applicants/new" element={<AddApplicant />} />
+                <Route
+          path="/interviews/:id/applicants/:applicantId/edit"
+          element={<EditApplicant />}
+        />
         <Route
           path="interviews/:id/applicants/:applicantId/interview/completed"
           element={<ThankYou />}
