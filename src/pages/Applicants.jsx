@@ -56,10 +56,42 @@ export default function Applicants() {
   }, [fetchApplicants]);
 
   useEffect(() => {
-    if (successMessage) {
+    if (successMessage === "Add applicants success") {
       fetchApplicants();
     }
   }, [successMessage, fetchApplicants]);
+
+  const handleCopyLink = useCallback(
+    async (applicantId) => {
+      if (!interviewId || !applicantId) {
+        return;
+      }
+
+      const interviewPath = `/interviews/${interviewId}/applicants/${applicantId}/interview`;
+      const interviewLink = `${window.location.origin}${interviewPath}`;
+
+      try {
+        if (navigator?.clipboard?.writeText) {
+          await navigator.clipboard.writeText(interviewLink);
+        } else {
+          const textarea = document.createElement("textarea");
+          textarea.value = interviewLink;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "absolute";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand("copy");
+          document.body.removeChild(textarea);
+        }
+
+        setSuccessMessage("Interview link copyed");
+      } catch (copyError) {
+        console.error("Failed to copy interview link", copyError);
+      }
+    },
+    [interviewId, setSuccessMessage],
+  );
 
   useEffect(() => {
     if (!successMessage) {
@@ -160,7 +192,11 @@ export default function Applicants() {
         </td>
         <td>
           <div className="actions">
-            <button type="button" className="rect-button rect-button--ghost">
+            <button
+              type="button"
+              className="rect-button rect-button--ghost"
+              onClick={() => handleCopyLink(applicant.id)}
+            >
               Copy Link
             </button>
             <Link
